@@ -1,0 +1,18 @@
+e7 8e b0
+31
+现在我输入了一些Chinese
+e7 8e b0 e5 9c a8 e6 88 91 e8 be 93 e5 85 a5 e4 ba 86 e4 b8 80 e4 ba 9b 43 68 69 6e 65 73 65 
+3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 
+
+e0 bd 82
+60
+ག་ང་ད་ན་བ་མ་འ་ར་ལ་ས།
+e0 bd 82 e0 bc 8b e0 bd 84 e0 bc 8b e0 bd 91 e0 bc 8b e0 bd 93 e0 bc 8b e0 bd 96 e0 bc 8b e0 bd 98 e0 bc 8b e0 bd a0 e0 bc 8b e0 bd a2 e0 bc 8b e0 bd a3 e0 bc 8b e0 bd a6 e0 bc 8d 
+3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 
+
+d8 a6 db
+12
+ئۇيغۇر
+d8 a6 db 87 d9 8a d8 ba db 87 d8 b1 
+2 2 2 2 2 2 
+
