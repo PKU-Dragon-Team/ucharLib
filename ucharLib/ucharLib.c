@@ -152,3 +152,21 @@ size_t fprint_uchar_len(FILE * out, uchar *s, size_t l) {
 	fprintf_s(out, "\n");
 	return count;
 }
+
+size_t fprint_ustring(FILE * out, struct ustring us) {
+
+	fprintf_s(out, "%d\n%d\n", us.type, us.index_len);
+
+	// print us.index
+	size_t max = us.index_len;
+	size_t i = 0;
+	for (i = 0; i < max; ++i) {
+		fprintf_s(out, "%d\t", us.index[i]);
+	}
+
+	// print us.string_len
+	fprintf_s(out, "\n%d\n", us.string_len);
+
+	// print us.string
+	fprintf_s(out, "%s\n", us.string, us.string_len);
+}

@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <math.h>
 
 #define UTF8_0 0x80		// 1000 0000
 #define UTF8_1 0x0		// 0000 0000
@@ -34,3 +33,4 @@ size_t update_ustring_len(struct ustring *us, size_t l);
 // function for debug
 size_t fprint_uchar_dex(FILE * out, uchar *s, size_t l);
 size_t fprint_uchar_len(FILE * out, uchar *s, size_t l);
+size_t fprint_ustring(FILE * out, struct ustring us);
