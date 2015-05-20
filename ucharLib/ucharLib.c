@@ -8,6 +8,10 @@ struct ustring {
 	uchar * string;
 };
 
+static size_t lowbit(size_t x) {
+	return x & (~x + 1);
+}
+
 int get_uchar_len(uchar uc) {
 	if ((uc ^ UTF8_0) >> 6 == 0) {
 		return 0;
@@ -106,10 +110,6 @@ size_t update_ustring_index(struct ustring * us) {
 		}
 		return i_index;
 	}
-}
-
-static size_t lowbit(size_t x) {
-	return x & (~x + 1);
 }
 
 size_t update_ustring_len(struct ustring *us, size_t l) {

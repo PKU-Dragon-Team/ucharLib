@@ -5,20 +5,20 @@
 #include <stdint.h>
 #include <math.h>
 
-#define UTF8_0 0x80
-#define UTF8_1 0x0
-#define UTF8_2 0xC0
-#define UTF8_3 0xE0
-#define UTF8_4 0xF0
+#define UTF8_0 0x80		// 1000 0000
+#define UTF8_1 0x0		// 0000 0000
+#define UTF8_2 0xC0		// 1100 0000
+#define UTF8_3 0xE0		// 1110 0000
+#define UTF8_4 0xF0		// 1111 0000
 
 // typedef
 typedef unsigned char uchar;
 
+// enum
+enum ustring_type { index, fenwick };
+
 // struct
 struct ustring;
-
-// enum
-enum ustring_type {index, fenwick};
 
 // static function
 static size_t lowbit(size_t x);
