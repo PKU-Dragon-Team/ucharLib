@@ -54,15 +54,15 @@ size_t update_ustring_index(struct ustring * us) {
 		// loop init
 		size_t i = 0;
 		size_t i_index = 0;
-		size_t sizeof_index;
+		size_t index_size;
 		size_t l = us->string_len;
 
 		if (us->index == NULL) {
-			sizeof_index = 1;
-			us->index = calloc(sizeof_index, sizeof(size_t));
+			index_size = 1;
+			us->index = calloc(index_size, sizeof(size_t));
 		}
 		else {
-			sizeof_index = us->index_len;
+			index_size = us->index_len;
 		}
 
 		// loop body
@@ -71,9 +71,9 @@ size_t update_ustring_index(struct ustring * us) {
 			if (uclen == 0) {
 				return -1;
 			}
-			if (i_index > sizeof_index - 1) {	// dynamic expand
-				sizeof_index *= 2;
-				size_t * p = realloc(us->index, sizeof_index * sizeof(size_t));
+			if (i_index > index_size - 1) {	// dynamic expand
+				index_size *= 2;
+				size_t * p = realloc(us->index, index_size * sizeof(size_t));
 				if (p == NULL) {
 					return -1;
 				}
@@ -108,6 +108,7 @@ size_t update_ustring_index(struct ustring * us) {
 			i += uclen;
 			++i_index;
 		}
+		us->index_len = index_size;
 		return i_index;
 	}
 }
