@@ -48,10 +48,9 @@ int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l
 		us->type = type;
 		us->string = s;
 		us->string_len = update_ustring_len(us, l);
-		size_t check = init_ustring_index(us);
-		if (check < 0) {
-			return -1;
-		}
+		us->index = NULL;
+		us->index_len = 0;
+		update_ustring_index(us);
 	}
 	return 0;
 }
@@ -71,17 +70,51 @@ int clear_ustring(struct ustring * us) {
 	return 0;
 }
 
-size_t init_ustring_index(struct ustring * us) {
-	if (us == NULL) {
+int clone_ustring(const struct ustring *us1, struct ustring * us2) {
+	if (us1 == NULL || us2 == NULL) {
 		return -1;
 	}
-	else {
-		if (us->index != NULL) {
-			free(us->index);
-			us->index_len = 0;
+
+	if (us2->string == NULL) {
+		us2->string = calloc(us1->string_len + 1, sizeof(uchar));
+		if (us2->string == NULL) {
+			return -1;
 		}
-		return update_ustring_index(us);
 	}
+	else if (us2->string_len < us1->string_len) {
+		uchar * temp = realloc(us2->string, (us1->string_len + 1) * sizeof(uchar));
+		if (temp == NULL) {
+			return -1;
+		}
+		us2->string = temp;
+	}
+	us2->string_len = us1->string_len;
+	strcpy_s(us2->string, us2->string_len, us1->string);
+
+	if (us2->index == NULL) {
+		us2->index = calloc(us1->index_len, sizeof(size_t));
+		if (us2->index == NULL) {
+			return -1;
+		}
+	}
+	else if (us2->index_len < us1->index_len) {
+		size_t * temp = realloc(us2->index, us1->index_len * sizeof(size_t));
+		if (temp == NULL) {
+			return -1;
+		}
+		us2->index = temp;
+	}
+	us2->index_len = us1->index_len;
+	memcpy(us2->index, us1->index, us1->index_len * sizeof(size_t));
+
+	return 0;
+}
+
+int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start, size_t end) {
+	if (us1 == NULL || us2 == NULL) {
+		return -1;
+	}
+	return 0;
 }
 
 size_t update_ustring_index(struct ustring * us) {
@@ -165,7 +198,7 @@ size_t update_ustring_len(struct ustring *us, size_t l) {
 	}
 }
 
-size_t fprint_uchar_dex(FILE * out, uchar *s, size_t l) {
+size_t fprint_uchar_dex(FILE * out, const uchar *s, size_t l) {
 	size_t i = 0;
 	while (s[i] != '\0' && i < l) {
 		fprintf_s(out, "%x ", s[i]);
@@ -175,7 +208,7 @@ size_t fprint_uchar_dex(FILE * out, uchar *s, size_t l) {
 	return i;
 }
 
-size_t fprint_uchar_len(FILE * out, uchar *s, size_t l) {
+size_t fprint_uchar_len(FILE * out, const uchar *s, size_t l) {
 	size_t i = 0;
 	size_t count = 0;
 	while (s[i] != '\0' && i < l) {
@@ -191,7 +224,7 @@ size_t fprint_uchar_len(FILE * out, uchar *s, size_t l) {
 	return count;
 }
 
-void fprint_ustring(FILE * out, struct ustring us) {
+void fprint_ustring(FILE * out, const struct ustring us) {
 	fprintf_s(out, "%d\n%d\n", us.type, us.index_len);
 
 	// print us.index
