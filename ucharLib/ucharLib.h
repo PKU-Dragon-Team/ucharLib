@@ -26,6 +26,8 @@ static size_t lowbit(size_t x);
 int  get_uchar_len(uchar uc);
 
 // function for ustring
+int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l);
+int clear_ustring(struct ustring * us);
 size_t init_ustring_index(struct ustring * us);
 size_t update_ustring_index(struct ustring * us);
 size_t update_ustring_len(struct ustring *us, size_t l);
@@ -33,4 +35,4 @@ size_t update_ustring_len(struct ustring *us, size_t l);
 // function for debug
 size_t fprint_uchar_dex(FILE * out, uchar *s, size_t l);
 size_t fprint_uchar_len(FILE * out, uchar *s, size_t l);
-size_t fprint_ustring(FILE * out, struct ustring us);
+void fprint_ustring(FILE * out, struct ustring us);

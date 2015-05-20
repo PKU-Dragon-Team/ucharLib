@@ -33,6 +33,44 @@ int get_uchar_len(uchar uc) {
 	}
 }
 
+int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l) {
+	if (us == NULL) {
+		return -1;
+	}
+	if (s == NULL) {
+		us->type = type;
+		us->index_len = 0;
+		us->index = NULL;
+		us->string_len = 0;
+		us->string = NULL;
+	}
+	else {
+		us->type = type;
+		us->string = s;
+		us->string_len = update_ustring_len(us, l);
+		size_t check = init_ustring_index(us);
+		if (check < 0) {
+			return -1;
+		}
+	}
+	return 0;
+}
+
+int clear_ustring(struct ustring * us) {
+	if (us == NULL) {
+		return -1;
+	}
+	us->string_len = 0;
+	if (us->string != NULL) {
+		free(us->string);
+	}
+	us->index_len = 0;
+	if (us->index != NULL) {
+		free(us->index);
+	}
+	return 0;
+}
+
 size_t init_ustring_index(struct ustring * us) {
 	if (us == NULL) {
 		return -1;
@@ -153,8 +191,7 @@ size_t fprint_uchar_len(FILE * out, uchar *s, size_t l) {
 	return count;
 }
 
-size_t fprint_ustring(FILE * out, struct ustring us) {
-
+void fprint_ustring(FILE * out, struct ustring us) {
 	fprintf_s(out, "%d\n%d\n", us.type, us.index_len);
 
 	// print us.index
