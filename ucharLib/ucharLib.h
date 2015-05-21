@@ -41,17 +41,17 @@ int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l
 // Frees the pointers in a initiated ustring. Shall be call before free the ustring.
 int clear_ustring(struct ustring * us);
 
-// Copy the content of us1 to us2, automatically malloc or realloc us2 if necessary.
+// Copy the content of us1 to us2, automatically calloc or realloc us2 if necessary.
 int clone_ustring(const struct ustring * us1, struct ustring * us2);
 
-// Copy the content from start to end-1 in us1 to us2, automatically malloc or realloc us2 if necessary.
+// Copy the content from start to end-1 in us1 to us2, automatically calloc or realloc us2 if necessary.
 int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start, size_t end);
 
 // Update the index of us, returns how many index units were made.
 size_t update_ustring_index(struct ustring * us);
 
-// Update the index from n-th index unit of us, assumes the index of 0...n-1 are correct, \
-returns how many index units were made.
+/* Update the index after n-th index unit of us, assumes the index of 0...n are correct, 
+   returns how many index units were made. */
 size_t update_nth_ustring_index(struct ustring * us, size_t n);
 
 // Update the string_len of us, returns the length.
