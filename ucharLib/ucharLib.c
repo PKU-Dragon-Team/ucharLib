@@ -184,6 +184,74 @@ size_t update_ustring_index(struct ustring * us) {
 	}
 }
 
+size_t update_nth_ustring_index(struct ustring * us, size_t n){
+	if (us == NULL || n > us->index_len) {
+		return -1;
+	}
+	else {
+		// loop init
+		size_t i = 0;
+		size_t i_index = n;
+		size_t index_size;
+		size_t l = us->string_len;
+
+		if (us->index == NULL) {
+			index_size = 1;
+			us->index = calloc(index_size, sizeof(size_t));
+		}
+		else {
+			index_size = us->index_len;
+		}
+
+		// loop body
+		while (us->string[i] != '\0' && i < l) {
+			int uclen = get_uchar_len(us->string[i]);
+			if (uclen == 0) {
+				return -1;
+			}
+			if (i_index > index_size - 1) {	// dynamic expand
+				index_size *= 2;
+				size_t * p = realloc(us->index, index_size * sizeof(size_t));
+				if (p == NULL) {
+					return -1;
+				}
+				else
+				{
+					us->index = p;
+				}
+			}
+
+			if (us->type == index) {
+				// index
+				us->index[i_index] = i;
+			}
+			else if (us->type == fenwick) {
+				// fenwick tree
+				size_t sum = 0;
+				size_t kt = i_index;
+				size_t k = lowbit(i_index);
+				while (kt > k) {
+					kt -= k;
+					sum += us->index[kt];
+					k = lowbit(kt);
+				}
+				us->index[i_index] = i - sum;
+			}
+			else {
+				// default
+				return -1;
+			}
+
+			// loop update
+			i += uclen;
+			++i_index;
+		}
+		us->index_len = index_size;
+		return i_index;
+	}
+
+}
+
 size_t update_ustring_len(struct ustring *us, size_t l) {
 	if (us == NULL) {
 		return -1;
