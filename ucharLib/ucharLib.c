@@ -12,6 +12,18 @@ static size_t lowbit(size_t x) {
 	return x & (~x + 1);
 }
 
+static size_t fenwick_sum(const size_t * index, size_t i_index) {
+	size_t sum = 0;
+	size_t kt = i_index;
+	size_t k = lowbit(i_index);
+	while (kt > k) {
+		kt -= k;
+		sum += index[kt];
+		k = lowbit(kt);
+	}
+	return sum;
+}
+
 int get_uchar_len(uchar uc) {
 	if ((uc ^ UTF8_0) >> 6 == 0) {
 		return 0;
@@ -50,7 +62,7 @@ int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l
 		us->string_len = update_ustring_len(us, l);
 		us->index = NULL;
 		us->index_len = 0;
-		update_ustring_index(us);
+		refresh_ustring_index(us);
 	}
 	return 0;
 }
@@ -68,6 +80,21 @@ int clear_ustring(struct ustring * us) {
 		free(us->index);
 	}
 	return 0;
+}
+
+size_t get_ustring_index(const struct ustring * us, size_t n) {
+	if (us == NULL || n + 1 > us->index_len) {
+		return 0;
+	}
+	if (us->type == index) {
+		return us->index[n];
+	}
+	else if (us->type == fenwick) {
+		return fenwick_sum(us->index, n);
+	}
+	else {
+		return 0;
+	}
 }
 
 int clone_ustring(const struct ustring *us1, struct ustring * us2) {
@@ -114,14 +141,26 @@ int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start
 	if (us1 == NULL || us2 == NULL) {
 		return -1;
 	}
+	if (end - start + 1 > us2->index_len) {
+		size_t * temp = realloc(us2->index, (end - start + 1) * sizeof(size_t));
+		if (temp == NULL) {
+			return -1;
+		}
+		us2->index = temp;
+	}
+	size_t s = fenwick_sum(us1->index, start);
+	size_t e = fenwick_sum(us1->index, end);
+	if (e - s + 1 > us2->string_len) {
+		size_t * temp = realloc(us2->string, (e - s + 1) * sizeof(uchar));
+	}
 	return 0;
 }
 
-size_t update_ustring_index(struct ustring * us) {
-	return update_nth_ustring_index(us, 0);
+size_t refresh_ustring_index(struct ustring * us) {
+	return update_ustring_index(us, 0);
 }
 
-size_t update_nth_ustring_index(struct ustring * us, size_t n){
+size_t update_ustring_index(struct ustring * us, size_t n){
 	if (us == NULL || n > us->index_len) {
 		return 0;
 	}
@@ -159,14 +198,7 @@ size_t update_nth_ustring_index(struct ustring * us, size_t n){
 		}
 		else if (us->type == fenwick) {
 			// fenwick tree
-			size_t sum = 0;
-			size_t kt = i_index;
-			size_t k = lowbit(i_index);
-			while (kt > k) {
-				kt -= k;
-				sum += us->index[kt];
-				k = lowbit(kt);
-			}
+			size_t sum = fenwick_sum(us->index, i_index);
 			us->index[i_index] = i - sum;
 		}
 		else {

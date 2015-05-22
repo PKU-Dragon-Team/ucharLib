@@ -24,6 +24,7 @@ struct ustring;
 
 // ----- static function -----
 static size_t lowbit(size_t x);
+static size_t fenwick_sum(const size_t * index, size_t i_index);
 
 // ----- function for uchar -----
 int  get_uchar_len(uchar uc);
@@ -31,8 +32,8 @@ int  get_uchar_len(uchar uc);
 // ----- function for ustring -----
 /* only init_ustring accepts (and only accepts) raw ustring (newly malloc), 
    others assume the ustring have been initiated. 
- * If type of return value is int, 0 means success. If it is size_t, 
-   it means how many actions are made successfully.
+ * If type of return value is int, 0 means success. 
+   If it is size_t, it means how many actions have done successfully.
  */
 
 // Shall and only shall be called immediately after malloc a new ustring.
@@ -41,18 +42,27 @@ int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l
 // Frees the pointers in a initiated ustring. Shall be call before free the ustring.
 int clear_ustring(struct ustring * us);
 
-// Copy the content of us1 to us2, automatically calloc or realloc us2 if necessary.
+// get the index of n-th character in us.
+size_t get_ustring_index(const struct ustring * us, size_t n);
+
+// Copy us1 to us2. Automatically calloc or realloc us2 if necessary.
 int clone_ustring(const struct ustring * us1, struct ustring * us2);
 
-// Copy the content from start to end-1 in us1 to us2, automatically calloc or realloc us2 if necessary.
+// Copy us1 from start to end-1 and override us2. Automatically calloc or realloc us2 if necessary.
 int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start, size_t end);
 
+// Concatenate us1 to the end of us2. Automatically calloc or realloc if necessary.
+int cat_ustring(const struct ustring * us1, struct ustring * us2);
+
+// Concatenate us1 at (start, end-1) to the end of us2. Automatically expand us2.
+int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t start, size_t end);
+
 // Update the index of us, returns how many index units were made.
-size_t update_ustring_index(struct ustring * us);
+size_t refresh_ustring_index(struct ustring * us);
 
 /* Update the index after n-th index unit of us, assumes the index of 0...n are correct, 
    returns how many index units were made. */
-size_t update_nth_ustring_index(struct ustring * us, size_t n);
+size_t update_ustring_index(struct ustring * us, size_t n);
 
 // Update the string_len of us, returns the length.
 size_t update_ustring_len(struct ustring *us, size_t l);
