@@ -39,10 +39,10 @@ int  get_uchar_len(uchar uc);
 // Shall and only shall be called immediately after malloc a new ustring.
 int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l);
 
-// Frees the pointers in a initiated ustring. Shall be call before free the ustring.
+// Frees pointers in a initiated ustring. Shall be call before free the ustring.
 int clear_ustring(struct ustring * us);
 
-// get the index of n-th character in us.
+// Get the index of n-th character in us.
 size_t get_ustring_index(const struct ustring * us, size_t n);
 
 // Copy us1 to us2. Automatically calloc or realloc us2 if necessary.

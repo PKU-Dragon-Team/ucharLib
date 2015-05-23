@@ -141,18 +141,26 @@ int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start
 	if (us1 == NULL || us2 == NULL) {
 		return -1;
 	}
-	if (end - start + 1 > us2->index_len) {
-		size_t * temp = realloc(us2->index, (end - start + 1) * sizeof(size_t));
-		if (temp == NULL) {
-			return -1;
-		}
-		us2->index = temp;
+	size_t s;
+	size_t e;
+	if (us2->type == index) {
+		s = us1->index[start];
+		e = us1->index[end];
 	}
-	size_t s = fenwick_sum(us1->index, start);
-	size_t e = fenwick_sum(us1->index, end);
-	if (e - s + 1 > us2->string_len) {
-		size_t * temp = realloc(us2->string, (e - s + 1) * sizeof(uchar));
+	else if (us2->type = fenwick) {
+		s = fenwick_sum(us1->index, start);
+		e = fenwick_sum(us1->index, end);
 	}
+	else {
+		return -1;
+	}
+	if (e - s + 2 > us2->string_len) {
+		size_t * temp = realloc(us2->string, (e - s + 2) * sizeof(uchar));
+	}
+	us2->string_len = e - s + 1;
+	strcpy_s(us2->string, (e - s + 1) * sizeof(uchar), us1->string + s);
+	us2->string[us2->string_len] = '\0';
+	refresh_ustring_index(us2);
 	return 0;
 }
 
@@ -172,10 +180,18 @@ size_t update_ustring_index(struct ustring * us, size_t n){
 		}
 		us->index_len = 1;
 	}
-	size_t i = us->index[n];
-	size_t i_index = n;
 	size_t index_size = us->index_len;
 	size_t l = us->string_len;
+	size_t i;
+	size_t i_index;
+	if (n == 0) {
+		i = 0;
+		i_index = 0;
+	}
+	else {
+		i = us->index[n - 1];
+		i_index = n - 1;
+	}
 
 	// loop body
 	while (us->string[i] != '\0' && i < l) {
@@ -210,22 +226,20 @@ size_t update_ustring_index(struct ustring * us, size_t n){
 		i += uclen;
 		++i_index;
 	}
-	us->index_len = index_size;
-	return i_index - n + 1;
+	us->index_len = i_index;
+	return i_index - n;
 }
 
 size_t update_ustring_len(struct ustring *us, size_t l) {
 	if (us == NULL) {
 		return 0;
 	}
-	else {
-		size_t i = 0;
-		while (us->string[i] != '\0' && i < l) {
-			++i;
-		}
-		us->string_len = i;
-		return i;
+	size_t i = 0;
+	while (us->string[i] != '\0' && i < l) {
+		++i;
 	}
+	us->string_len = i;
+	return i;
 }
 
 size_t fprint_uchar_dex(FILE * out, const uchar *s, size_t l) {
