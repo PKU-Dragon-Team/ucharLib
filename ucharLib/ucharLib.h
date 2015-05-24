@@ -45,6 +45,9 @@ int clear_ustring(struct ustring * us);
 // Get the index of n-th character in us.
 size_t get_ustring_index(const struct ustring * us, size_t n);
 
+// Compare the two ustring, like strcmp. If either us1 or us2 is NULL, it will compare the address.
+int compare_ustring(const struct ustring * us1, const struct ustring * us2);
+
 // Copy us1 to us2. Automatically calloc or realloc us2 if necessary.
 int clone_ustring(const struct ustring * us1, struct ustring * us2);
 

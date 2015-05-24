@@ -97,6 +97,14 @@ size_t get_ustring_index(const struct ustring * us, size_t n) {
 	}
 }
 
+int compare_ustring(const struct ustring * us1, const struct ustring * us2) {
+	if (us1 == NULL || us2 == NULL)
+	{
+		return us1 - us2;
+	}
+	return strcmp(us1->string, us2->string);
+}
+
 int clone_ustring(const struct ustring *us1, struct ustring * us2) {
 	if (us1 == NULL || us2 == NULL) {
 		return -1;
