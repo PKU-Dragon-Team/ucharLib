@@ -156,9 +156,49 @@ int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start
 	}
 	if (e - s + 2 > us2->string_len) {
 		size_t * temp = realloc(us2->string, (e - s + 2) * sizeof(uchar));
+		if (temp == NULL) {
+			return -1;
+		}
+		us2->string = temp;
 	}
 	us2->string_len = e - s + 1;
 	strcpy_s(us2->string, (e - s + 1) * sizeof(uchar), us1->string + s);
+	us2->string[us2->string_len] = '\0';
+	refresh_ustring_index(us2);
+	return 0;
+}
+
+int cat_ustring(const struct ustring * us1, struct ustring * us2) {
+	if (us1 == NULL) {
+		return -1;
+	}
+	return cat_partial_ustring(us1, us2, 0, us1->index_len);
+}
+
+int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t start, size_t end) {
+	if (us1 == NULL || us2 == NULL) {
+		return -1;
+	}
+	size_t s;
+	size_t e;
+	if (us2->type == index) {
+		s = us1->index[start];
+		e = us1->index[end];
+	}
+	else if (us2->type = fenwick) {
+		s = fenwick_sum(us1->index, start);
+		e = fenwick_sum(us1->index, end);
+	}
+	else {
+		return -1;
+	}
+	size_t * temp = realloc(us2->string, (us2->string_len + e - s + 2) * sizeof(uchar));
+	if (temp == NULL) {
+		return -1;
+	}
+	us2->string = temp;
+	strcpy_s(us2->string + us2->string_len, (e - s + 1) * sizeof(uchar), us1->string + s);
+	us2->string_len = us2->string_len + e - s + 1;
 	us2->string[us2->string_len] = '\0';
 	refresh_ustring_index(us2);
 	return 0;
