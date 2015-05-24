@@ -30,11 +30,11 @@ static size_t fenwick_sum(const size_t * index, size_t i_index);
 int  get_uchar_len(uchar uc);
 
 // ----- function for ustring -----
-/* only init_ustring accepts (and only accepts) raw ustring (newly malloc), 
-   others assume the ustring have been initiated. 
- * If type of return value is int, 0 means success. 
+/* only init_ustring accepts (and only accepts) raw ustring (newly malloc),
+   others assume the ustring have been initiated.
+   * If type of return value is int, 0 means success.
    If it is size_t, it means how many actions have done successfully.
- */
+   */
 
 // Shall and only shall be called immediately after malloc a new ustring.
 int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l);
@@ -47,6 +47,10 @@ size_t get_ustring_index(const struct ustring * us, size_t n);
 
 // Compare the two ustring, like strcmp. If either us1 or us2 is NULL, it will compare the address.
 int compare_ustring(const struct ustring * us1, const struct ustring * us2);
+
+size_t find_uchar_ustring(const struct ustring * us, const uchar uc);
+size_t find_ustring(const struct ustring * us1, const struct ustring *us2);
+int replace_ustring(struct ustring * us1, const struct ustring * us2, size_t start, size_t end);
 
 // Copy us1 to us2. Automatically calloc or realloc us2 if necessary.
 int clone_ustring(const struct ustring * us1, struct ustring * us2);
@@ -63,7 +67,7 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 // Update the index of us, returns how many index units were made.
 size_t refresh_ustring_index(struct ustring * us);
 
-/* Update the index after n-th index unit of us, assumes the index of 0...n are correct, 
+/* Update the index after n-th index unit of us, assumes the index of 0...n are correct,
    returns how many index units were made. */
 size_t update_ustring_index(struct ustring * us, size_t n);
 
