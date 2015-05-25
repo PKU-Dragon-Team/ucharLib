@@ -105,6 +105,15 @@ int compare_ustring(const struct ustring * us1, const struct ustring * us2) {
 	return strcmp(us1->string, us2->string);
 }
 
+uchar * find_uchar_ustring(const struct ustring * us, const uchar uc, bool backwards) {
+	if (backwards) {
+		return strrchr(us->string, uc);
+	}
+	else {
+		return strchr(us->string, uc);
+	}
+}
+
 int clone_ustring(const struct ustring *us1, struct ustring * us2) {
 	if (us1 == NULL || us2 == NULL) {
 		return -1;
