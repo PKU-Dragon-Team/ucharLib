@@ -48,7 +48,10 @@ size_t get_ustring_index(const struct ustring * us, size_t n);
 // Compare the two ustring, like strcmp. If either us1 or us2 is NULL, it will compare the address.
 int compare_ustring(const struct ustring * us1, const struct ustring * us2);
 
+// Find us2 in us1, works like strstr.
 uchar * find_ustring(const struct ustring * us1, const struct ustring *us2);
+
+// Replace us1[start, end-1] with us2, return 0 if success.
 int replace_ustring(struct ustring * us1, const struct ustring * us2, size_t start, size_t end);
 
 // Copy us1 to us2. Automatically calloc or realloc us2 if necessary.
