@@ -16,27 +16,31 @@ int main(int argc, char *argv[]) {
 
 	int i = 0;
 	while (fscanf_s(in, "%s", buf, BUF_SIZE) != EOF) {
+		struct ustring * us1;
+		struct ustring * us2;
+
 		fprintf_s(out, "=====Line %d=====\n", i);
 		fprintf_s(out, "%x %x %x\n%d\n%s\n", buf[0], buf[1], buf[2], strlen(buf), buf, BUF_SIZE);
 		fprint_uchar_dex(out, buf, BUF_SIZE);
 		fprint_uchar_len(out, buf, BUF_SIZE);
-		fprintf_s(out, "\n\n");
-		struct ustring * us1 = malloc(sizeof(struct ustring));
-		init_ustring(us1, index, buf, BUF_SIZE);
-		struct ustring * us2 = malloc(sizeof(struct ustring));
-		init_ustring(us2, fenwick, buf, BUF_SIZE);
-		us2->type = fenwick;
-		refresh_ustring_index(us2);
-		fprint_ustring(out, us1);
-		fprint_ustring(out, us2);
-		fprint_index(out, us1);
-		fprint_index(out, us2);
+		fprintf_s(out, "\n");
 
-		clear_ustring(us1);
-		free(us1);
-		clear_ustring(us2);
-		free(us2);
-		fprintf_s(out, "=================\n");
+		init_ustring(&us1, index, buf, BUF_SIZE);
+		init_ustring(&us2, fenwick, buf, BUF_SIZE);
+
+		fprintf_s(out, "-----us1-----\n");
+		fprint_ustring(out, us1);
+		fprint_index(out, us1);
+		fprintf_s(out, "\n-------------\n");
+
+		fprintf_s(out, "-----us2-----\n");
+		fprint_ustring(out, us2);
+		fprint_index(out, us2);
+		fprintf_s(out, "\n-------------\n");
+
+		clear_ustring(&us1);
+		clear_ustring(&us2);
+		fprintf_s(out, "\n================\n");
 		++i;
 	}
 

@@ -53,8 +53,8 @@ int init_ustring(struct ustring ** us, enum ustring_type type, const uchar * s, 
 		(*us)->string = NULL;
 	}
 	else {
-		uchar * ts = calloc(strnlen(s, l) + 1);
-		strcpy_s(ts, strnlen(s, l) * sizeof(uchar), s);
+		uchar * ts = calloc(strnlen(s, l) + 1, sizeof(uchar));
+		memcpy(ts, s, strnlen(s, l) * sizeof(uchar));
 		(*us)->type = type;
 		(*us)->string = ts;
 		(*us)->string_len = update_ustring_len(*us, l);
@@ -65,17 +65,19 @@ int init_ustring(struct ustring ** us, enum ustring_type type, const uchar * s, 
 	return 0;
 }
 
-int clear_ustring(struct ustring * us) {
+int clear_ustring(struct ustring ** us) {
 	if (us == NULL) {
 		return -1;
 	}
-	us->string_len = 0;
-	if (us->string != NULL) {
-		free(us->string);
-	}
-	us->index_len = 0;
-	if (us->index != NULL) {
-		free(us->index);
+	if (*us != NULL) {
+		if ((*us)->string != NULL) {
+			free((*us)->string);
+		}
+		if ((*us)->index != NULL) {
+			free((*us)->index);
+		}
+		free(*us);
+		*us = NULL;
 	}
 	return 0;
 }
@@ -88,7 +90,7 @@ size_t get_ustring_index(const struct ustring * us, size_t n) {
 		return us->index[n];
 	}
 	else if (us->type == fenwick) {
-		return fenwick_sum(us->index, n);
+		return fenwick_sum(us->index, n) + us->index[n];
 	}
 	else {
 		return 0;
@@ -138,7 +140,7 @@ int clone_ustring(const struct ustring *us1, struct ustring * us2) {
 		us2->string = temp;
 	}
 	us2->string_len = us1->string_len;
-	strcpy_s(us2->string, (us2->string_len + 1) * sizeof(uchar), us1->string);
+	memcpy(us2->string, us1->string, (us2->string_len + 1) * sizeof(uchar));
 
 	if (us2->index == NULL) {
 		us2->index = calloc(us1->index_len, sizeof(size_t));
@@ -184,7 +186,7 @@ int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start
 		us2->string = temp;
 	}
 	us2->string_len = e - s + 1;
-	strcpy_s(us2->string, (e - s + 1) * sizeof(uchar), us1->string + s);
+	memcpy(us2->string, us1->string + s, (e - s + 1) * sizeof(uchar));
 	us2->string[us2->string_len] = '\0';
 	refresh_ustring_index(us2);
 	return 0;
@@ -219,7 +221,7 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 		return -1;
 	}
 	us2->string = temp;
-	strcpy_s(us2->string + us2->string_len, (e - s + 1) * sizeof(uchar), us1->string + s);
+	memcpy(us2->string + us2->string_len, us1->string + s, (e - s + 1) * sizeof(uchar));
 	us2->string_len = us2->string_len + e - s + 1;
 	us2->string[us2->string_len] = '\0';
 	refresh_ustring_index(us2);
