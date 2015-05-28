@@ -20,7 +20,13 @@ typedef unsigned char uchar;
 enum ustring_type { index, fenwick };
 
 // ----- struct -----
-struct ustring;
+struct ustring {
+	enum ustring_type type;
+	size_t index_len;
+	size_t * index;
+	size_t string_len;
+	uchar * string;
+};
 
 // ----- static function -----
 static size_t lowbit(size_t x);
@@ -36,11 +42,11 @@ int  get_uchar_len(uchar uc);
    If it is size_t, it means how many actions have done successfully.
    */
 
-// Shall and only shall be called immediately after malloc a new ustring.
-int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l);
+// 
+int init_ustring(struct ustring ** us, enum ustring_type type, const uchar * s, size_t l);
 
-// Frees pointers in a initiated ustring. Shall be call before free the ustring.
-int clear_ustring(struct ustring * us);
+// 
+int clear_ustring(struct ustring ** us);
 
 // Get the index of n-th character in us.
 size_t get_ustring_index(const struct ustring * us, size_t n);
@@ -76,6 +82,7 @@ size_t update_ustring_len(struct ustring *us, size_t l);
 // ----- function for debug -----
 size_t fprint_uchar_dex(FILE * out, const uchar *s, size_t l);
 size_t fprint_uchar_len(FILE * out, const uchar *s, size_t l);
-void fprint_ustring(FILE * out, const struct ustring us);
+void fprint_ustring(FILE * out, const struct ustring * us);
+void fprint_index(FILE * out, const struct ustring * us);
 
 #endif

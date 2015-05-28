@@ -1,13 +1,5 @@
 #include "ucharLib.h"
 
-struct ustring {
-	enum ustring_type type;
-	size_t index_len;
-	size_t * index;
-	size_t string_len;
-	uchar * string;
-};
-
 static size_t lowbit(size_t x) {
 	return x & (~x + 1);
 }
@@ -45,24 +37,30 @@ int get_uchar_len(uchar uc) {
 	}
 }
 
-int init_ustring(struct ustring * us, enum ustring_type type, uchar *s, size_t l) {
+int init_ustring(struct ustring ** us, enum ustring_type type, const uchar * s, size_t l) {
 	if (us == NULL) {
 		return -1;
 	}
+	*us = malloc(sizeof(struct ustring));
+	if (*us == NULL) {
+		return -1;
+	}
 	if (s == NULL) {
-		us->type = type;
-		us->index_len = 0;
-		us->index = NULL;
-		us->string_len = 0;
-		us->string = NULL;
+		(*us)->type = type;
+		(*us)->index_len = 0;
+		(*us)->index = NULL;
+		(*us)->string_len = 0;
+		(*us)->string = NULL;
 	}
 	else {
-		us->type = type;
-		us->string = s;
-		us->string_len = update_ustring_len(us, l);
-		us->index = NULL;
-		us->index_len = 0;
-		refresh_ustring_index(us);
+		uchar * ts = calloc(strnlen(s, l) + 1);
+		strcpy_s(ts, strnlen(s, l) * sizeof(uchar), s);
+		(*us)->type = type;
+		(*us)->string = ts;
+		(*us)->string_len = update_ustring_len(*us, l);
+		(*us)->index = NULL;
+		(*us)->index_len = 0;
+		refresh_ustring_index(*us);
 	}
 	return 0;
 }
@@ -100,7 +98,16 @@ size_t get_ustring_index(const struct ustring * us, size_t n) {
 int compare_ustring(const struct ustring * us1, const struct ustring * us2) {
 	if (us1 == NULL || us2 == NULL)
 	{
-		return us1 - us2;
+		if (us1 > us2) {
+			return 1;
+		}
+		else if (us1 < us2)
+		{
+			return -1;
+		}
+		else {
+			return 0;
+		}
 	}
 	return strcmp(us1->string, us2->string);
 }
@@ -170,7 +177,7 @@ int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start
 		return -1;
 	}
 	if (e - s + 2 > us2->string_len) {
-		size_t * temp = realloc(us2->string, (e - s + 2) * sizeof(uchar));
+		uchar * temp = realloc(us2->string, (e - s + 2) * sizeof(uchar));
 		if (temp == NULL) {
 			return -1;
 		}
@@ -207,7 +214,7 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 	else {
 		return -1;
 	}
-	size_t * temp = realloc(us2->string, (us2->string_len + e - s + 2) * sizeof(uchar));
+	uchar * temp = realloc(us2->string, (us2->string_len + e - s + 2) * sizeof(uchar));
 	if (temp == NULL) {
 		return -1;
 	}
@@ -323,19 +330,28 @@ size_t fprint_uchar_len(FILE * out, const uchar *s, size_t l) {
 	return count;
 }
 
-void fprint_ustring(FILE * out, const struct ustring us) {
-	fprintf_s(out, "%d\n%d\n", us.type, us.index_len);
+void fprint_ustring(FILE * out, const struct ustring * us) {
+	fprintf_s(out, "%d\n%d\n", us->type, us->index_len);
 
-	// print us.index
-	size_t max = us.index_len;
+	// print us->index
+	size_t max = us->index_len;
 	size_t i = 0;
 	for (i = 0; i < max; ++i) {
-		fprintf_s(out, "%d\t", us.index[i]);
+		fprintf_s(out, "%d\t", us->index[i]);
 	}
 
-	// print us.string_len
-	fprintf_s(out, "\n%d\n", us.string_len);
+	// print us->string_len
+	fprintf_s(out, "\n%d\n", us->string_len);
 
-	// print us.string
-	fprintf_s(out, "%s\n", us.string, us.string_len);
+	// print us->string
+	fprintf_s(out, "%s\n", us->string, us->string_len);
+}
+
+void fprint_index(FILE * out, const struct ustring * us) {
+	size_t i = 0;
+	size_t n = us->index_len;
+
+	for (i = 0; i < n; ++i) {
+		fprintf_s(out, "%d ", get_ustring_index(us, i));
+	}
 }
