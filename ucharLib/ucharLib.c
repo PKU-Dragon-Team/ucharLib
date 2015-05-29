@@ -114,11 +114,11 @@ int compare_ustring(const struct ustring * us1, const struct ustring * us2) {
 	return strcmp(us1->string, us2->string);
 }
 
-uchar * find_ustring(const struct ustring * us1, const struct ustring *us2) {
+bool find_ustring(const struct ustring * us1, const struct ustring *us2) {
 	if (us1 == NULL || us2 == NULL || us1->string == NULL || us2->string == NULL) {
-		return NULL;
+		return false;
 	}
-	return strstr(us1->string, us2->string);
+	return strstr(us1->string, us2->string) != NULL;
 }
 
 int clone_ustring(const struct ustring *us1, struct ustring * us2) {
@@ -169,11 +169,11 @@ int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start
 	size_t e;
 	if (us2->type == index) {
 		s = us1->index[start];
-		e = us1->index[end];
+		e = us1->index[end] - 1;
 	}
 	else if (us2->type = fenwick) {
 		s = fenwick_sum(us1->index, start);
-		e = fenwick_sum(us1->index, end);
+		e = fenwick_sum(us1->index, end) - 1;
 	}
 	else {
 		return -1;
@@ -207,11 +207,11 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 	size_t e;
 	if (us2->type == index) {
 		s = us1->index[start];
-		e = us1->index[end];
+		e = us1->index[end] - 1;
 	}
 	else if (us2->type = fenwick) {
-		s = fenwick_sum(us1->index, start);
-		e = fenwick_sum(us1->index, end);
+		s = fenwick_sum(us1->index, start) + us1->index[start];
+		e = fenwick_sum(us1->index, end) + us1->index[end] - 1;
 	}
 	else {
 		return -1;

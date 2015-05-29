@@ -42,10 +42,10 @@ int  get_uchar_len(uchar uc);
    If it is size_t, it means how many actions have done successfully.
    */
 
-// 
+// Init `*us` with `s` with max length `l` and index type `type`
 int init_ustring(struct ustring ** us, enum ustring_type type, const uchar * s, size_t l);
 
-// 
+// Free the memory of *us
 int clear_ustring(struct ustring ** us);
 
 // Get the index of n-th character in us.
@@ -54,8 +54,8 @@ size_t get_ustring_index(const struct ustring * us, size_t n);
 // Compare the two ustring, like strcmp. If either us1 or us2 is NULL, it will compare the address.
 int compare_ustring(const struct ustring * us1, const struct ustring * us2);
 
-// Find us2 in us1, works like strstr.
-uchar * find_ustring(const struct ustring * us1, const struct ustring *us2);
+// Find us2 in us1, true if found, false otherwise.
+bool find_ustring(const struct ustring * us1, const struct ustring *us2);
 
 // Copy us1 to us2. Automatically calloc or realloc us2 if necessary.
 int clone_ustring(const struct ustring * us1, struct ustring * us2);
