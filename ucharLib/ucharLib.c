@@ -169,11 +169,11 @@ int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start
 	size_t e;
 	if (us2->type == index) {
 		s = us1->index[start];
-		e = us1->index[end] - 1;
+		e = ((end > us1->index_len) ? us1->index[us1->index_len] : us1->index[end]) - 1;
 	}
 	else if (us2->type = fenwick) {
-		s = fenwick_sum(us1->index, start);
-		e = fenwick_sum(us1->index, end) - 1;
+		s = fenwick_sum(us1->index, start) + us1->index[start];
+		e = ((end > us1->index_len) ? fenwick_sum(us1->index, us1->index_len) + us1->index[us1->index_len] : fenwick_sum(us1->index, end) + us1->index[end]) - 1;
 	}
 	else {
 		return -1;
@@ -207,11 +207,11 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 	size_t e;
 	if (us2->type == index) {
 		s = us1->index[start];
-		e = us1->index[end] - 1;
+		e = ((end > us1->index_len) ? us1->index[us1->index_len] : us1->index[end]) - 1;
 	}
 	else if (us2->type = fenwick) {
 		s = fenwick_sum(us1->index, start) + us1->index[start];
-		e = fenwick_sum(us1->index, end) + us1->index[end] - 1;
+		e = ((end > us1->index_len) ? fenwick_sum(us1->index, us1->index_len) + us1->index[us1->index_len] : fenwick_sum(us1->index, end) + us1->index[end]) - 1;
 	}
 	else {
 		return -1;
@@ -265,7 +265,7 @@ size_t update_ustring_index(struct ustring * us, size_t n){
 		}
 		if (i_index + 1 > index_size) {	// dynamic expand
 			index_size *= 2;
-			size_t * p = realloc(us->index, index_size * sizeof(size_t));
+			size_t * p = realloc(us->index, (index_size + 1) * sizeof(size_t));
 			if (p == NULL) {
 				break;
 			}
@@ -289,6 +289,19 @@ size_t update_ustring_index(struct ustring * us, size_t n){
 		// loop update
 		i += uclen;
 		++i_index;
+	}
+	if (us->type == index) {
+		// index
+		us->index[i_index] = i;
+	}
+	else if (us->type == fenwick) {
+		// fenwick tree
+		size_t sum = fenwick_sum(us->index, i_index);
+		us->index[i_index] = i - sum;
+	}
+	else {
+		// default
+		return 0;
 	}
 	us->index_len = i_index;
 	return i_index - n;
