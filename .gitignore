@@ -190,3 +190,4 @@ ModelManifest.xml
 *.vcxproj
 *.filters
 *.sln
+/WE-Markdown.css
