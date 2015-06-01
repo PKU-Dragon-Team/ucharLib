@@ -69,6 +69,9 @@ int cat_ustring(const struct ustring * us1, struct ustring * us2);
 // Concatenate us1 at (start, end-1) to the end of us2. Automatically expand us2.
 int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t start, size_t end);
 
+// Hash a ustring and mod the hash with n
+size_t hash_ustring(const struct ustring * us, size_t seed, size_t n);
+
 // Update the index of us, returns how many index units were made.
 size_t refresh_ustring_index(struct ustring * us);
 

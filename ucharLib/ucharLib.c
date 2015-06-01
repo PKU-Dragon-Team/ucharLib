@@ -228,6 +228,16 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 	return 0;
 }
 
+// Here use the algorithm of http://stackoverflow.com/a/107657/4900529
+size_t hash_ustring(const struct ustring * us, size_t seed, size_t n) {
+	size_t hash = seed;
+	uchar * s = us->string;
+	while (*s) {
+		hash = hash * 101 + *s++;
+	}
+	return hash % n;
+}
+
 size_t refresh_ustring_index(struct ustring * us) {
 	return update_ustring_index(us, 0);
 }
@@ -369,4 +379,5 @@ void fprint_index(FILE * out, const struct ustring * us) {
 	for (i = 0; i < n; ++i) {
 		fprintf_s(out, "%d ", get_ustring_index(us, i));
 	}
+	fprintf_s(out, "\n");
 }
