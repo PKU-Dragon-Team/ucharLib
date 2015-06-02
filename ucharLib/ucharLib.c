@@ -133,11 +133,9 @@ int clone_ustring(const struct ustring *us1, struct ustring * us2) {
 		}
 	}
 	else if (us2->string_len < us1->string_len) {
-		uchar * temp = realloc(us2->string, (us1->string_len + 1) * sizeof(uchar));
-		if (temp == NULL) {
+		if (resize_ustring(&us2->string, us1->string_len + 1) != 0) {
 			return -1;
 		}
-		us2->string = temp;
 	}
 	us2->string_len = us1->string_len;
 	memcpy(us2->string, us1->string, (us2->string_len + 1) * sizeof(uchar));
@@ -149,11 +147,9 @@ int clone_ustring(const struct ustring *us1, struct ustring * us2) {
 		}
 	}
 	else if (us2->index_len < us1->index_len) {
-		size_t * temp = realloc(us2->index, us1->index_len * sizeof(size_t));
-		if (temp == NULL) {
+		if (resize_ustring_index(&us2->index, us1->index_len) != 0) {
 			return -1;
 		}
-		us2->index = temp;
 	}
 	us2->index_len = us1->index_len;
 	memcpy(us2->index, us1->index, us1->index_len * sizeof(size_t));
@@ -178,13 +174,13 @@ int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start
 	else {
 		return -1;
 	}
+
 	if (e - s + 2 > us2->string_len) {
-		uchar * temp = realloc(us2->string, (e - s + 2) * sizeof(uchar));
-		if (temp == NULL) {
+		if (resize_ustring(&us2->string, (e - s + 2)) != 0) {
 			return -1;
 		}
-		us2->string = temp;
 	}
+
 	us2->string_len = e - s + 1;
 	memcpy(us2->string, us1->string + s, (e - s + 1) * sizeof(uchar));
 	us2->string[us2->string_len] = '\0';
@@ -216,11 +212,11 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 	else {
 		return -1;
 	}
-	uchar * temp = realloc(us2->string, (us2->string_len + e - s + 2) * sizeof(uchar));
-	if (temp == NULL) {
+
+	if (resize_ustring(&us2->string, us2->string_len + e - s + 2) != 0) {
 		return -1;
 	}
-	us2->string = temp;
+
 	memcpy(us2->string + us2->string_len, us1->string + s, (e - s + 1) * sizeof(uchar));
 	us2->string_len = us2->string_len + e - s + 1;
 	us2->string[us2->string_len] = '\0';
@@ -228,7 +224,7 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 	return 0;
 }
 
-// Here use the algorithm of http://stackoverflow.com/a/107657/4900529
+// Here use the algorithm from http://stackoverflow.com/a/107657/4900529
 size_t hash_ustring(const struct ustring * us, size_t seed, size_t n) {
 	size_t hash = seed;
 	uchar * s = us->string;
@@ -275,11 +271,9 @@ size_t update_ustring_index(struct ustring * us, size_t n){
 		}
 		if (i_index + 1 > index_size) {	// dynamic expand
 			index_size *= 2;
-			size_t * p = realloc(us->index, (index_size + 1) * sizeof(size_t));
-			if (p == NULL) {
+			if (resize_ustring_index(&us->index, (index_size + 1)) != 0) {
 				break;
 			}
-			us->index = p;
 		}
 
 		if (us->type == index) {
@@ -327,6 +321,24 @@ size_t update_ustring_len(struct ustring *us, size_t l) {
 	}
 	us->string_len = i;
 	return i;
+}
+
+int resize_ustring(uchar ** s, size_t n) {
+	uchar * p = realloc(*s, n * sizeof(uchar));
+	if (p == NULL) {
+		return -1;
+	}
+	*s = p;
+	return 0;
+}
+
+int resize_ustring_index(size_t ** index, size_t n) {
+	size_t * p = realloc(*index, n * sizeof(size_t));
+	if (p == NULL) {
+		return -1;
+	}
+	*index = p;
+	return 0;
 }
 
 size_t fprint_uchar_dex(FILE * out, const uchar *s, size_t l) {

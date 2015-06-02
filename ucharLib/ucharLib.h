@@ -82,6 +82,12 @@ size_t update_ustring_index(struct ustring * us, size_t n);
 // Update the string_len of us, returns the length.
 size_t update_ustring_len(struct ustring *us, size_t l);
 
+// Resize us->string to length n
+int resize_ustring(uchar ** s, size_t n);
+
+// Resize us->index to length n
+int resize_ustring_index(size_t ** index, size_t n);
+
 // ----- function for debug -----
 size_t fprint_uchar_dex(FILE * out, const uchar *s, size_t l);
 size_t fprint_uchar_len(FILE * out, const uchar *s, size_t l);
