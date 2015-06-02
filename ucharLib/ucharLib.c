@@ -54,6 +54,9 @@ int init_ustring(struct ustring ** us, enum ustring_type type, const uchar * s, 
 	}
 	else {
 		uchar * ts = calloc(strnlen(s, l) + 1, sizeof(uchar));
+		if (ts == NULL) {
+			return -1;
+		}
 		memcpy(ts, s, strnlen(s, l) * sizeof(uchar));
 		(*us)->type = type;
 		(*us)->string = ts;
