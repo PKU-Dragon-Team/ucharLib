@@ -375,8 +375,7 @@ void fprint_ustring(FILE * out, const struct ustring * us) {
 
 	// print us->index
 	size_t max = us->index_len;
-	size_t i = 0;
-	for (i = 0; i < max; ++i) {
+	for (size_t i = 0; i < max; ++i) {
 		fprintf_s(out, "%d\t", us->index[i]);
 	}
 
@@ -388,10 +387,9 @@ void fprint_ustring(FILE * out, const struct ustring * us) {
 }
 
 void fprint_index(FILE * out, const struct ustring * us) {
-	size_t i = 0;
 	size_t n = us->index_len;
 
-	for (i = 0; i < n; ++i) {
+	for (size_t i = 0; i < n; ++i) {
 		fprintf_s(out, "%d ", get_ustring_index(us, i));
 	}
 	fprintf_s(out, "\n");
