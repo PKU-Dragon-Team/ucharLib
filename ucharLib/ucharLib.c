@@ -4,7 +4,7 @@ static size_t lowbit(size_t x) {
 	return x & (~x + 1);
 }
 
-static size_t fenwick_sum(const size_t * index, size_t i_index) {
+size_t fenwick_sum(const size_t index[], size_t i_index) {
 	size_t sum = 0;
 	size_t kt = i_index;
 	size_t k = lowbit(i_index);
@@ -37,7 +37,7 @@ int get_uchar_len(uchar uc) {
 	}
 }
 
-int init_ustring(struct ustring ** us, enum ustring_type type, const uchar * s, size_t l) {
+int init_ustring(struct ustring ** us, enum ustring_type type, const uchar s[], size_t l) {
 	if (us == NULL) {
 		return -1;
 	}
@@ -344,7 +344,7 @@ int resize_ustring_index(size_t ** index, size_t n) {
 	return 0;
 }
 
-size_t fprint_uchar_dex(FILE * out, const uchar *s, size_t l) {
+size_t fprint_uchar_dex(FILE * out, const uchar s[], size_t l) {
 	size_t i = 0;
 	while (s[i] != '\0' && i < l) {
 		fprintf_s(out, "%x ", s[i]);
@@ -354,7 +354,7 @@ size_t fprint_uchar_dex(FILE * out, const uchar *s, size_t l) {
 	return i;
 }
 
-size_t fprint_uchar_len(FILE * out, const uchar *s, size_t l) {
+size_t fprint_uchar_len(FILE * out, const uchar s[], size_t l) {
 	size_t i = 0;
 	size_t count = 0;
 	while (s[i] != '\0' && i < l) {

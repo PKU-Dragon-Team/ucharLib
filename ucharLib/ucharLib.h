@@ -30,7 +30,7 @@ struct ustring {
 
 // ----- static function -----
 static size_t lowbit(size_t x);
-static size_t fenwick_sum(const size_t * index, size_t i_index);
+static size_t fenwick_sum(const size_t index[], size_t i_index);
 
 // ----- function for uchar -----
 int  get_uchar_len(uchar uc);
@@ -43,7 +43,7 @@ int  get_uchar_len(uchar uc);
    */
 
 // Init `*us` with `s` with max length `l` and index type `type`
-int init_ustring(struct ustring ** us, enum ustring_type type, const uchar * s, size_t l);
+int init_ustring(struct ustring ** us, enum ustring_type type, const uchar s[], size_t l);
 
 // Free the memory of *us
 int clear_ustring(struct ustring ** us);
@@ -89,8 +89,8 @@ int resize_ustring(uchar ** s, size_t n);
 int resize_ustring_index(size_t ** index, size_t n);
 
 // ----- function for debug -----
-size_t fprint_uchar_dex(FILE * out, const uchar *s, size_t l);
-size_t fprint_uchar_len(FILE * out, const uchar *s, size_t l);
+size_t fprint_uchar_dex(FILE * out, const uchar s[], size_t l);
+size_t fprint_uchar_len(FILE * out, const uchar s[], size_t l);
 void fprint_ustring(FILE * out, const struct ustring * us);
 void fprint_index(FILE * out, const struct ustring * us);
 
