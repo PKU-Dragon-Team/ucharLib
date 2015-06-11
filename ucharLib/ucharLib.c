@@ -101,13 +101,22 @@ size_t get_ustring_index(const struct ustring * us, size_t n) {
 }
 
 int compare_ustring(const struct ustring * us1, const struct ustring * us2) {
-	if (us1 == NULL || us2 == NULL)
-	{
+	if (us1 == NULL || us2 == NULL) {
 		if (us1 > us2) {
 			return 1;
 		}
-		else if (us1 < us2)
-		{
+		else if (us1 < us2) {
+			return -1;
+		}
+		else {
+			return 0;
+		}
+	}
+	if (us1->string == NULL || us2->string == NULL) {
+		if (us1->string > us2->string) {
+			return 1;
+		}
+		else if (us1->string < us2->string) {
 			return -1;
 		}
 		else {
@@ -125,7 +134,7 @@ bool find_ustring(const struct ustring * us1, const struct ustring *us2) {
 }
 
 int clone_ustring(const struct ustring *us1, struct ustring * us2) {
-	if (us1 == NULL || us2 == NULL) {
+	if (us1 == NULL || us2 == NULL || us1->string == NULL) {
 		return -1;
 	}
 
@@ -231,8 +240,10 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 size_t hash_ustring(const struct ustring * us, size_t seed, size_t n) {
 	size_t hash = seed;
 	uchar * s = us->string;
-	while (*s) {
-		hash = hash * 101 + *s++;
+	if (s != NULL) {
+		while (*s) {
+			hash = hash * 101 + *s++;
+		}
 	}
 	return hash % n;
 }
@@ -241,7 +252,7 @@ size_t refresh_ustring_index(struct ustring * us) {
 	return update_ustring_index(us, 0);
 }
 
-size_t update_ustring_index(struct ustring * us, size_t n){
+size_t update_ustring_index(struct ustring * us, size_t n) {
 	if (us == NULL || n > us->index_len) {
 		return 0;
 	}
