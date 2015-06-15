@@ -45,6 +45,9 @@ int  get_uchar_len(uchar uc);
 // Init `*us` with `s` with max length `l` and index type `type`
 int init_ustring(struct ustring ** us, enum ustring_type type, const uchar s[], size_t l);
 
+// Set us's content with s at max length l;
+int set_ustring(struct ustring * us, const uchar s[], size_t l);
+
 // Free the memory of *us
 int clear_ustring(struct ustring ** us);
 

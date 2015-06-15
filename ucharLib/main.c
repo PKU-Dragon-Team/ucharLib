@@ -11,8 +11,14 @@ int main(int argc, char *argv[]) {
 	FILE * out;
 	fopen_s(&in, "in.txt", "r");
 	fopen_s(&out, "out.txt", "w");
+	if (in == NULL || out == NULL) {
+		return -1;
+	}
 
 	uchar * buf = calloc(BUF_SIZE, sizeof(uchar));
+	if (buf == NULL) {
+		return -1;
+	}
 
 	int i = 0;
 	while (fscanf_s(in, "%s", buf, BUF_SIZE) != EOF) {
@@ -22,7 +28,7 @@ int main(int argc, char *argv[]) {
 		struct ustring * us4[BUF_SIZE];
 
 		fprintf_s(out, "=====Line %d=====\n", i);
-		fprintf_s(out, "%x %x %x\n%d\n%s\n", buf[0], buf[1], buf[2], strlen(buf), buf, BUF_SIZE);
+		fprintf_s(out, "%x %x %x\n%llu\n%s\n", buf[0], buf[1], buf[2], strlen(buf), buf);
 		fprint_uchar_dex(out, buf, BUF_SIZE);
 		fprint_uchar_len(out, buf, BUF_SIZE);
 		fprintf_s(out, "\n");
