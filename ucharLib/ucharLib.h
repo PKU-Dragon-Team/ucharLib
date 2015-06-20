@@ -62,20 +62,20 @@ llu get_ustring_index(const struct ustring * us, llu n);
 // Compare the two ustring, like strcmp. If either us1 or us2 is NULL, it will compare the address.
 int compare_ustring(const struct ustring * us1, const struct ustring * us2);
 
-// Find us2 in us1, true if found, false otherwise.
-bool find_ustring(const struct ustring * us1, const struct ustring *us2);
+// Find us_sub in us_base, true if found, false otherwise.
+bool find_ustring(const struct ustring * us_base, const struct ustring *us_sub);
 
-// Copy us1 to us2. Automatically calloc or realloc us2 if necessary.
-int clone_ustring(const struct ustring * us1, struct ustring * us2);
+// Copy us_base to us_target. Automatically calloc or realloc us1 if necessary.
+int clone_ustring(struct ustring * us_target, const struct ustring * us_base);
 
-// Copy us1 from start to end-1 and override us2. Automatically calloc or realloc us2 if necessary.
-int slice_ustring(const struct ustring * us1, struct ustring * us2, llu start, llu end);
+// Copy us_base from start to end-1 and override us_target. Automatically calloc or realloc us1 if necessary.
+int slice_ustring(struct ustring * us_target, const struct ustring * us_base, llu start, llu end);
 
-// Concatenate us1 to the end of us2. Automatically calloc or realloc if necessary.
-int cat_ustring(const struct ustring * us1, struct ustring * us2);
+// Concatenate us_base to the end of us_target. Automatically calloc or realloc if necessary.
+int cat_ustring(struct ustring * us_target, const struct ustring * us_base);
 
 // Concatenate us1 at (start, end-1) to the end of us2. Automatically expand us2.
-int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, llu start, llu end);
+int cat_partial_ustring(struct ustring * us_target, const struct ustring * us_base, llu start, llu end);
 
 /* Hash us and mod the hashcode with n
  * Use the algorithm from http://stackoverflow.com/a/107657/4900529

@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 		init_ustring(&us1, index, buf, BUF_SIZE);
 		init_ustring(&us2, fenwick, buf, BUF_SIZE);
 		init_ustring(&us3, index, "", BUF_SIZE);
-		clone_ustring(us1, us3);
+		clone_ustring(us3, us1);
 		init_ustring(&us4[0], index, "", BUF_SIZE);
 		init_ustring(&us4[1], index, "Chinese", BUF_SIZE);
 		init_ustring(&us4[2], index, "ooops", BUF_SIZE);
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 		fprintf_s(out, "%llx\n", hash_ustring(us3, 0, RSIZE_MAX));
 		fprintf_s(out, "-------------\n");
 
-		slice_ustring(us1, us4[0], 0, 5);
+		slice_ustring(us4[0], us1, 0, 5);
 		fprintf_s(out, "-----us4[0]-----\n");
 		fprint_ustring(out, us4[0]);
 		fprint_index(out, us4[0]);
@@ -75,14 +75,14 @@ int main(int argc, char *argv[]) {
 		fprintf_s(out, "%llx\n", hash_ustring(us4[1], 0, RSIZE_MAX));
 		fprintf_s(out, "----------------\n");
 
-		cat_ustring(us1, us4[2]);
+		cat_ustring(us4[2], us1);
 		fprintf_s(out, "-----us4[2]-----\n");
 		fprint_ustring(out, us4[2]);
 		fprint_index(out, us4[2]);
 		fprintf_s(out, "%llx\n", hash_ustring(us4[2], 0, RSIZE_MAX));
 		fprintf_s(out, "----------------\n");
 
-		cat_partial_ustring(us1, us4[3], 1, 3);
+		cat_partial_ustring(us4[3], us1, 1, 3);
 		fprintf_s(out, "-----us4[3]-----\n");
 		fprint_ustring(out, us4[3]);
 		fprint_index(out, us4[3]);

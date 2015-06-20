@@ -150,113 +150,113 @@ int compare_ustring(const struct ustring * us1, const struct ustring * us2) {
 	return strcmp(us1->string, us2->string);
 }
 
-bool find_ustring(const struct ustring * us1, const struct ustring *us2) {
-	if (us1 == NULL || us2 == NULL || us1->string == NULL || us2->string == NULL) {
+bool find_ustring(const struct ustring * us_base, const struct ustring *us_sub) {
+	if (us_base == NULL || us_sub == NULL || us_base->string == NULL || us_sub->string == NULL) {
 		return false;
 	}
-	return strstr(us1->string, us2->string) != NULL;
+	return strstr(us_base->string, us_sub->string) != NULL;
 }
 
-int clone_ustring(const struct ustring *us1, struct ustring * us2) {
-	if (us1 == NULL || us2 == NULL || us1->string == NULL) {
+int clone_ustring(struct ustring * us_target, const struct ustring * us_base) {
+	if (us_base == NULL || us_target == NULL || us_base->string == NULL) {
 		return -1;
 	}
 
-	if (us2->string == NULL) {
-		us2->string = calloc(us1->string_len + 1, sizeof(uchar));
-		if (us2->string == NULL) {
+	if (us_target->string == NULL) {
+		us_target->string = calloc(us_base->string_len + 1, sizeof(uchar));
+		if (us_target->string == NULL) {
 			return -1;
 		}
 	}
-	else if (us2->string_len < us1->string_len) {
-		if (resize_ustring(&us2->string, us1->string_len + 1) != 0) {
+	else if (us_target->string_len < us_base->string_len) {
+		if (resize_ustring(&us_target->string, us_base->string_len + 1) != 0) {
 			return -1;
 		}
 	}
-	us2->string_len = us1->string_len;
-	memcpy(us2->string, us1->string, (us2->string_len + 1) * sizeof(uchar));
+	us_target->string_len = us_base->string_len;
+	memcpy(us_target->string, us_base->string, (us_target->string_len + 1) * sizeof(uchar));
 
-	if (us2->index == NULL) {
-		us2->index = calloc(us1->index_len, sizeof(llu));
-		if (us2->index == NULL) {
+	if (us_target->index == NULL) {
+		us_target->index = calloc(us_base->index_len, sizeof(llu));
+		if (us_target->index == NULL) {
 			return -1;
 		}
 	}
-	else if (us2->index_len < us1->index_len) {
-		if (resize_ustring_index(&us2->index, us1->index_len) != 0) {
+	else if (us_target->index_len < us_base->index_len) {
+		if (resize_ustring_index(&us_target->index, us_base->index_len) != 0) {
 			return -1;
 		}
 	}
-	us2->index_len = us1->index_len;
-	memcpy(us2->index, us1->index, us1->index_len * sizeof(llu));
+	us_target->index_len = us_base->index_len;
+	memcpy(us_target->index, us_base->index, us_base->index_len * sizeof(llu));
 
 	return 0;
 }
 
-int slice_ustring(const struct ustring * us1, struct ustring * us2, llu start, llu end) {
-	if (us1 == NULL || us2 == NULL) {
+int slice_ustring(struct ustring * us_target, const struct ustring * us_base, llu start, llu end) {
+	if (us_base == NULL || us_target == NULL) {
 		return -1;
 	}
 	llu s;
 	llu e;
-	if (us2->type == index) {
-		s = us1->index[start];
-		e = ((end > us1->index_len) ? us1->index[us1->index_len] : us1->index[end]) - 1;
+	if (us_target->type == index) {
+		s = us_base->index[start];
+		e = ((end > us_base->index_len) ? us_base->index[us_base->index_len] : us_base->index[end]) - 1;
 	}
-	else if (us2->type == fenwick) {
-		s = fenwick_sum(us1->index, start) + us1->index[start];
-		e = ((end > us1->index_len) ? fenwick_sum(us1->index, us1->index_len) + us1->index[us1->index_len] : fenwick_sum(us1->index, end) + us1->index[end]) - 1;
+	else if (us_target->type == fenwick) {
+		s = fenwick_sum(us_base->index, start) + us_base->index[start];
+		e = ((end > us_base->index_len) ? fenwick_sum(us_base->index, us_base->index_len) + us_base->index[us_base->index_len] : fenwick_sum(us_base->index, end) + us_base->index[end]) - 1;
 	}
 	else {
 		return -1;
 	}
 
-	if (e - s + 2 > us2->string_len) {
-		if (resize_ustring(&us2->string, (e - s + 2)) != 0) {
+	if (e - s + 2 > us_target->string_len) {
+		if (resize_ustring(&us_target->string, (e - s + 2)) != 0) {
 			return -1;
 		}
 	}
 
-	us2->string_len = e - s + 1;
-	memcpy(us2->string, us1->string + s, (e - s + 1) * sizeof(uchar));
-	us2->string[us2->string_len] = '\0';
-	refresh_ustring_index(us2);
+	us_target->string_len = e - s + 1;
+	memcpy(us_target->string, us_base->string + s, (e - s + 1) * sizeof(uchar));
+	us_target->string[us_target->string_len] = '\0';
+	refresh_ustring_index(us_target);
 	return 0;
 }
 
-int cat_ustring(const struct ustring * us1, struct ustring * us2) {
-	if (us1 == NULL) {
+int cat_ustring(struct ustring * us_target, const struct ustring * us_base) {
+	if (us_base == NULL) {
 		return -1;
 	}
-	return cat_partial_ustring(us1, us2, 0, us1->index_len);
+	return cat_partial_ustring(us_target, us_base, 0, us_base->index_len);
 }
 
-int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, llu start, llu end) {
-	if (us1 == NULL || us2 == NULL) {
+int cat_partial_ustring(struct ustring * us_target, const struct ustring * us_base, llu start, llu end) {
+	if (us_base == NULL || us_target == NULL) {
 		return -1;
 	}
 	llu s;
 	llu e;
-	if (us2->type == index) {
-		s = us1->index[start];
-		e = ((end > us1->index_len) ? us1->index[us1->index_len] : us1->index[end]) - 1;
+	if (us_target->type == index) {
+		s = us_base->index[start];
+		e = ((end > us_base->index_len) ? us_base->index[us_base->index_len] : us_base->index[end]) - 1;
 	}
-	else if (us2->type == fenwick) {
-		s = fenwick_sum(us1->index, start) + us1->index[start];
-		e = ((end > us1->index_len) ? fenwick_sum(us1->index, us1->index_len) + us1->index[us1->index_len] : fenwick_sum(us1->index, end) + us1->index[end]) - 1;
+	else if (us_target->type == fenwick) {
+		s = fenwick_sum(us_base->index, start) + us_base->index[start];
+		e = ((end > us_base->index_len) ? fenwick_sum(us_base->index, us_base->index_len) + us_base->index[us_base->index_len] : fenwick_sum(us_base->index, end) + us_base->index[end]) - 1;
 	}
 	else {
 		return -1;
 	}
 
-	if (resize_ustring(&us2->string, us2->string_len + e - s + 2) != 0) {
+	if (resize_ustring(&us_target->string, us_target->string_len + e - s + 2) != 0) {
 		return -1;
 	}
 
-	memcpy(us2->string + us2->string_len, us1->string + s, (e - s + 1) * sizeof(uchar));
-	us2->string_len = us2->string_len + e - s + 1;
-	us2->string[us2->string_len] = '\0';
-	refresh_ustring_index(us2);
+	memcpy(us_target->string + us_target->string_len, us_base->string + s, (e - s + 1) * sizeof(uchar));
+	us_target->string_len = us_target->string_len + e - s + 1;
+	us_target->string[us_target->string_len] = '\0';
+	refresh_ustring_index(us_target);
 	return 0;
 }
 
