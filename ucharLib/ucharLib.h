@@ -74,7 +74,7 @@ int slice_ustring(struct ustring * us_target, const struct ustring * us_base, ll
 // Concatenate us_base to the end of us_target. Automatically calloc or realloc if necessary.
 int cat_ustring(struct ustring * us_target, const struct ustring * us_base);
 
-// Concatenate us1 at (start, end-1) to the end of us2. Automatically expand us2.
+// Concatenate us_base at (start, end-1) to the end of us_target. Automatically expand us2.
 int cat_partial_ustring(struct ustring * us_target, const struct ustring * us_base, llu start, llu end);
 
 /* Hash us and mod the hashcode with n
