@@ -1,19 +1,25 @@
 #include "ucharLib.h"
 
-static size_t lowbit(size_t x) {
+static llu lowbit(llu x) {
 	return x & (~x + 1);
 }
 
-size_t fenwick_sum(const size_t index[], size_t i_index) {
-	size_t sum = 0;
-	size_t kt = i_index;
-	size_t k = lowbit(i_index);
+static llu fenwick_sum(const llu index[], llu i_index) {
+	llu sum = 0;
+	llu kt = i_index;
+	llu k = lowbit(i_index);
 	while (kt > k) {
 		kt -= k;
 		sum += index[kt];
 		k = lowbit(kt);
 	}
 	return sum;
+}
+
+static void free_if_not_null(void * p) {
+	if (p != NULL) {
+		free(p);
+	}
 }
 
 int get_uchar_len(uchar uc) {
@@ -37,7 +43,7 @@ int get_uchar_len(uchar uc) {
 	}
 }
 
-int init_ustring(struct ustring ** us, enum ustring_type type, const uchar s[], size_t l) {
+int init_ustring(struct ustring ** us, enum ustring_type type, const uchar s[], llu l) {
 	if (us == NULL) {
 		return -1;
 	}
@@ -68,7 +74,7 @@ int init_ustring(struct ustring ** us, enum ustring_type type, const uchar s[], 
 	return 0;
 }
 
-int set_ustring(struct ustring * us, const uchar s[], size_t l) {
+int set_ustring(struct ustring * us, const uchar s[], llu l) {
 	if (us == NULL) {
 		return -1;
 	}
@@ -95,19 +101,15 @@ int clear_ustring(struct ustring ** us) {
 		return -1;
 	}
 	if (*us != NULL) {
-		if ((*us)->string != NULL) {
-			free((*us)->string);
-		}
-		if ((*us)->index != NULL) {
-			free((*us)->index);
-		}
+		free_if_not_null((*us)->string);
+		free_if_not_null((*us)->index);
 		free(*us);
 		*us = NULL;
 	}
 	return 0;
 }
 
-size_t get_ustring_index(const struct ustring * us, size_t n) {
+llu get_ustring_index(const struct ustring * us, llu n) {
 	if (us == NULL || n + 1 > us->index_len) {
 		return 0;
 	}
@@ -175,7 +177,7 @@ int clone_ustring(const struct ustring *us1, struct ustring * us2) {
 	memcpy(us2->string, us1->string, (us2->string_len + 1) * sizeof(uchar));
 
 	if (us2->index == NULL) {
-		us2->index = calloc(us1->index_len, sizeof(size_t));
+		us2->index = calloc(us1->index_len, sizeof(llu));
 		if (us2->index == NULL) {
 			return -1;
 		}
@@ -186,17 +188,17 @@ int clone_ustring(const struct ustring *us1, struct ustring * us2) {
 		}
 	}
 	us2->index_len = us1->index_len;
-	memcpy(us2->index, us1->index, us1->index_len * sizeof(size_t));
+	memcpy(us2->index, us1->index, us1->index_len * sizeof(llu));
 
 	return 0;
 }
 
-int slice_ustring(const struct ustring * us1, struct ustring * us2, size_t start, size_t end) {
+int slice_ustring(const struct ustring * us1, struct ustring * us2, llu start, llu end) {
 	if (us1 == NULL || us2 == NULL) {
 		return -1;
 	}
-	size_t s;
-	size_t e;
+	llu s;
+	llu e;
 	if (us2->type == index) {
 		s = us1->index[start];
 		e = ((end > us1->index_len) ? us1->index[us1->index_len] : us1->index[end]) - 1;
@@ -229,12 +231,12 @@ int cat_ustring(const struct ustring * us1, struct ustring * us2) {
 	return cat_partial_ustring(us1, us2, 0, us1->index_len);
 }
 
-int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t start, size_t end) {
+int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, llu start, llu end) {
 	if (us1 == NULL || us2 == NULL) {
 		return -1;
 	}
-	size_t s;
-	size_t e;
+	llu s;
+	llu e;
 	if (us2->type == index) {
 		s = us1->index[start];
 		e = ((end > us1->index_len) ? us1->index[us1->index_len] : us1->index[end]) - 1;
@@ -258,9 +260,8 @@ int cat_partial_ustring(const struct ustring * us1, struct ustring * us2, size_t
 	return 0;
 }
 
-// Here use the algorithm from http://stackoverflow.com/a/107657/4900529
-size_t hash_ustring(const struct ustring * us, size_t seed, size_t n) {
-	size_t hash = seed;
+llu hash_ustring(const struct ustring * us, llu seed, llu n) {
+	llu hash = seed;
 	uchar * s = us->string;
 	if (s != NULL) {
 		while (*s) {
@@ -270,26 +271,26 @@ size_t hash_ustring(const struct ustring * us, size_t seed, size_t n) {
 	return hash % n;
 }
 
-size_t refresh_ustring_index(struct ustring * us) {
+llu refresh_ustring_index(struct ustring * us) {
 	return update_ustring_index(us, 0);
 }
 
-size_t update_ustring_index(struct ustring * us, size_t n) {
+llu update_ustring_index(struct ustring * us, llu n) {
 	if (us == NULL || n > us->index_len) {
 		return 0;
 	}
 	// loop init
 	if (us->index_len == 0) {
-		us->index = calloc(1, sizeof(size_t));
+		us->index = calloc(1, sizeof(llu));
 		if (us->index == NULL) {
 			return 0;
 		}
 		us->index_len = 0;
 	}
-	size_t index_size = us->index_len;
-	size_t l = us->string_len;
-	size_t i;
-	size_t i_index;
+	llu index_size = us->index_len;
+	llu l = us->string_len;
+	llu i;
+	llu i_index;
 	if (n == 0) {
 		i = 0;
 		i_index = 0;
@@ -318,7 +319,7 @@ size_t update_ustring_index(struct ustring * us, size_t n) {
 		}
 		else if (us->type == fenwick) {
 			// fenwick tree
-			size_t sum = fenwick_sum(us->index, i_index);
+			llu sum = fenwick_sum(us->index, i_index);
 			us->index[i_index] = i - sum;
 		}
 		else {
@@ -336,7 +337,7 @@ size_t update_ustring_index(struct ustring * us, size_t n) {
 	}
 	else if (us->type == fenwick) {
 		// fenwick tree
-		size_t sum = fenwick_sum(us->index, i_index);
+		llu sum = fenwick_sum(us->index, i_index);
 		us->index[i_index] = i - sum;
 	}
 	else {
@@ -347,11 +348,11 @@ size_t update_ustring_index(struct ustring * us, size_t n) {
 	return i_index - n;
 }
 
-size_t update_ustring_len(struct ustring *us, size_t l) {
+llu update_ustring_len(struct ustring *us, llu l) {
 	if (us == NULL) {
 		return 0;
 	}
-	size_t i = 0;
+	llu i = 0;
 	while (us->string[i] != '\0' && i < l) {
 		++i;
 	}
@@ -359,7 +360,7 @@ size_t update_ustring_len(struct ustring *us, size_t l) {
 	return i;
 }
 
-int resize_ustring(uchar ** s, size_t n) {
+int resize_ustring(uchar ** s, llu n) {
 	uchar * p = realloc(*s, n * sizeof(uchar));
 	if (p == NULL) {
 		return -1;
@@ -368,8 +369,8 @@ int resize_ustring(uchar ** s, size_t n) {
 	return 0;
 }
 
-int resize_ustring_index(size_t ** index, size_t n) {
-	size_t * p = realloc(*index, n * sizeof(size_t));
+int resize_ustring_index(llu ** index, llu n) {
+	llu * p = realloc(*index, n * sizeof(llu));
 	if (p == NULL) {
 		return -1;
 	}
@@ -377,8 +378,8 @@ int resize_ustring_index(size_t ** index, size_t n) {
 	return 0;
 }
 
-size_t fprint_uchar_dex(FILE * out, const uchar s[], size_t l) {
-	size_t i = 0;
+llu fprint_uchar_dex(FILE * out, const uchar s[], llu l) {
+	llu i = 0;
 	while (s[i] != '\0' && i < l) {
 		fprintf_s(out, "%x ", s[i]);
 		++i;
@@ -387,9 +388,9 @@ size_t fprint_uchar_dex(FILE * out, const uchar s[], size_t l) {
 	return i;
 }
 
-size_t fprint_uchar_len(FILE * out, const uchar s[], size_t l) {
-	size_t i = 0;
-	size_t count = 0;
+llu fprint_uchar_len(FILE * out, const uchar s[], llu l) {
+	llu i = 0;
+	llu count = 0;
 	while (s[i] != '\0' && i < l) {
 		int t = get_uchar_len(s[i]);
 		if (t == 0) {
@@ -407,8 +408,8 @@ void fprint_ustring(FILE * out, const struct ustring * us) {
 	fprintf_s(out, "%d\n%llu\n", us->type, us->index_len);
 
 	// print us->index
-	size_t max = us->index_len;
-	for (size_t i = 0; i < max; ++i) {
+	llu max = us->index_len;
+	for (llu i = 0; i < max; ++i) {
 		fprintf_s(out, "%llu\t", us->index[i]);
 	}
 
@@ -420,9 +421,9 @@ void fprint_ustring(FILE * out, const struct ustring * us) {
 }
 
 void fprint_index(FILE * out, const struct ustring * us) {
-	size_t n = us->index_len;
+	llu n = us->index_len;
 
-	for (size_t i = 0; i < n; ++i) {
+	for (llu i = 0; i < n; ++i) {
 		fprintf_s(out, "%llu ", get_ustring_index(us, i));
 	}
 	fprintf_s(out, "\n");

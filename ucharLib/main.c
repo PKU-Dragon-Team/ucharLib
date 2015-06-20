@@ -61,7 +61,6 @@ int main(int argc, char *argv[]) {
 		fprintf_s(out, "%llx\n", hash_ustring(us3, 0, RSIZE_MAX));
 		fprintf_s(out, "-------------\n");
 
-
 		slice_ustring(us1, us4[0], 0, 5);
 		fprintf_s(out, "-----us4[0]-----\n");
 		fprint_ustring(out, us4[0]);
