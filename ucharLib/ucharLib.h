@@ -20,16 +20,16 @@ typedef long long lld;
 
 // ----- enum -----
 enum ustring_type {
-	index, fenwick
+    index, fenwick
 };
 
 // ----- struct -----
 struct ustring {
-	enum ustring_type type;
-	llu index_len;
-	llu * index;
-	llu string_len;
-	uchar * string;
+    enum ustring_type type;
+    llu index_len;
+    llu * index;
+    llu string_len;
+    uchar * string;
 };
 
 // ----- function for uchar -----
