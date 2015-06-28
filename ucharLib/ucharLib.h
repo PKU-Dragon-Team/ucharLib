@@ -32,11 +32,6 @@ struct ustring {
 	uchar * string;
 };
 
-// ----- static function -----
-static llu lowbit(llu x);
-static llu fenwick_sum(const llu index[], llu i_index);
-static void free_if_not_null(void * p);
-
 // ----- function for uchar -----
 int  get_uchar_len(uchar uc);
 
