@@ -381,10 +381,10 @@ int resize_ustring_index(llu ** index, llu n) {
 llu fprint_uchar_dex(FILE * out, const uchar s[], llu l) {
     llu i = 0;
     while (s[i] != '\0' && i < l) {
-        fprintf_s(out, "%x ", s[i]);
+        fprintf(out, "%x ", s[i]);
         ++i;
     }
-    fprintf_s(out, "\n");
+    fprintf(out, "\n");
     return i;
 }
 
@@ -396,35 +396,35 @@ llu fprint_uchar_len(FILE * out, const uchar s[], llu l) {
         if (t == 0) {
             return -1;
         }
-        fprintf_s(out, "%d ", t);
+        fprintf(out, "%d ", t);
         i += t;
         ++count;
     }
-    fprintf_s(out, "\n");
+    fprintf(out, "\n");
     return count;
 }
 
 void fprint_ustring(FILE * out, const struct ustring * us) {
-    fprintf_s(out, "%d\n%llu\n", us->type, us->index_len);
+    fprintf(out, "%d\n%llu\n", us->type, us->index_len);
 
     // print us->index
     llu max = us->index_len;
     for (llu i = 0; i < max; ++i) {
-        fprintf_s(out, "%llu\t", us->index[i]);
+        fprintf(out, "%llu\t", us->index[i]);
     }
 
     // print us->string_len
-    fprintf_s(out, "\n%llu\n", us->string_len);
+    fprintf(out, "\n%llu\n", us->string_len);
 
     // print us->string
-    fprintf_s(out, "%s\n", us->string);
+    fprintf(out, "%s\n", us->string);
 }
 
 void fprint_index(FILE * out, const struct ustring * us) {
     llu n = us->index_len;
 
     for (llu i = 0; i < n; ++i) {
-        fprintf_s(out, "%llu ", get_ustring_index(us, i));
+        fprintf(out, "%llu ", get_ustring_index(us, i));
     }
-    fprintf_s(out, "\n");
+    fprintf(out, "\n");
 }
