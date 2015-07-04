@@ -191,3 +191,5 @@ ModelManifest.xml
 *.filters
 *.sln
 /WE-Markdown.css
+*.txt
+main.c
