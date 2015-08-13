@@ -59,11 +59,11 @@ int init_ustring(struct ustring ** us, enum ustring_type type, const uchar s[], 
         (*us)->string = NULL;
     }
     else {
-        uchar * ts = calloc(strnlen(s, l) + 1, sizeof(uchar));
+        uchar * ts = calloc(strnlen(s, (size_t)l) + 1, sizeof(uchar));
         if (ts == NULL) {
             return -1;
         }
-        memcpy(ts, s, strnlen(s, l) * sizeof(uchar));
+        memcpy(ts, s, strnlen(s, (size_t)l) * sizeof(uchar));
         (*us)->type = type;
         (*us)->string = ts;
         (*us)->string_len = update_ustring_len(*us, l);
@@ -79,7 +79,7 @@ int set_ustring(struct ustring * us, const uchar s[], llu l) {
         return -1;
     }
     if (us->string == NULL) {
-        us->string = calloc(l + 1, sizeof(uchar));
+        us->string = calloc((size_t)(l + 1), sizeof(uchar));
         if (us->string == NULL) {
             return -1;
         }
@@ -90,7 +90,7 @@ int set_ustring(struct ustring * us, const uchar s[], llu l) {
         }
     }
     us->string_len = l;
-    memcpy(us->string, s, (us->string_len + 1) * sizeof(uchar));
+    memcpy(us->string, s, (size_t)((us->string_len + 1) * sizeof(uchar)));
     refresh_ustring_index(us);
 
     return 0;
@@ -163,7 +163,7 @@ int clone_ustring(struct ustring * us_target, const struct ustring * us_base) {
     }
 
     if (us_target->string == NULL) {
-        us_target->string = calloc(us_base->string_len + 1, sizeof(uchar));
+        us_target->string = calloc((size_t)(us_base->string_len + 1), sizeof(uchar));
         if (us_target->string == NULL) {
             return -1;
         }
@@ -174,10 +174,10 @@ int clone_ustring(struct ustring * us_target, const struct ustring * us_base) {
         }
     }
     us_target->string_len = us_base->string_len;
-    memcpy(us_target->string, us_base->string, (us_target->string_len + 1) * sizeof(uchar));
+    memcpy(us_target->string, us_base->string, (size_t)((us_target->string_len + 1) * sizeof(uchar)));
 
     if (us_target->index == NULL) {
-        us_target->index = calloc(us_base->index_len, sizeof(llu));
+        us_target->index = calloc((size_t)(us_base->index_len), sizeof(llu));
         if (us_target->index == NULL) {
             return -1;
         }
@@ -188,7 +188,7 @@ int clone_ustring(struct ustring * us_target, const struct ustring * us_base) {
         }
     }
     us_target->index_len = us_base->index_len;
-    memcpy(us_target->index, us_base->index, us_base->index_len * sizeof(llu));
+    memcpy(us_target->index, us_base->index, (size_t)(us_base->index_len * sizeof(llu)));
 
     return 0;
 }
@@ -218,7 +218,7 @@ int slice_ustring(struct ustring * us_target, const struct ustring * us_base, ll
     }
 
     us_target->string_len = e - s + 1;
-    memcpy(us_target->string, us_base->string + s, (e - s + 1) * sizeof(uchar));
+    memcpy(us_target->string, us_base->string + s, (size_t)((e - s + 1) * sizeof(uchar)));
     us_target->string[us_target->string_len] = '\0';
     refresh_ustring_index(us_target);
     return 0;
@@ -253,7 +253,7 @@ int cat_partial_ustring(struct ustring * us_target, const struct ustring * us_ba
         return -1;
     }
 
-    memcpy(us_target->string + us_target->string_len, us_base->string + s, (e - s + 1) * sizeof(uchar));
+    memcpy(us_target->string + us_target->string_len, us_base->string + s, (size_t)((e - s + 1) * sizeof(uchar)));
     us_target->string_len = us_target->string_len + e - s + 1;
     us_target->string[us_target->string_len] = '\0';
     refresh_ustring_index(us_target);
@@ -361,7 +361,7 @@ llu update_ustring_len(struct ustring *us, llu l) {
 }
 
 int resize_ustring(uchar ** s, llu n) {
-    uchar * p = realloc(*s, n * sizeof(uchar));
+    uchar * p = realloc(*s, (size_t)(n * sizeof(uchar)));
     if (p == NULL) {
         return -1;
     }
@@ -370,7 +370,7 @@ int resize_ustring(uchar ** s, llu n) {
 }
 
 int resize_ustring_index(llu ** index, llu n) {
-    llu * p = realloc(*index, n * sizeof(llu));
+    llu * p = realloc(*index, (size_t)(n * sizeof(llu)));
     if (p == NULL) {
         return -1;
     }
