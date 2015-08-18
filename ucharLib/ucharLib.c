@@ -17,7 +17,11 @@ static llu FENWICK_SUM(const llu index[], llu i_index) {
     return sum;
 }
 
-#define FREE_IF_NOT_NULL(p) if (p != NULL) free(p);
+static void FREE_IF_NOT_NULL(void * p) {
+    if (p != NULL) {
+        free(p);
+    }
+}
 
 int get_uchar_len(uchar uc) {
     if ((uc ^ UTF8_0) >> 6 == 0) {
@@ -425,5 +429,3 @@ void fprint_index(FILE * out, const struct ustring * us) {
     }
     fprintf(out, "\n");
 }
-
-#undef FREE_IF_NOT_NULL
