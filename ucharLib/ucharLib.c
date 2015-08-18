@@ -1,26 +1,23 @@
 #include "ucharLib.h"
 
-static llu lowbit(llu x) {
+// algorithm that get the lowest non-zero bit of integer
+static llu LOWBIT(llu x) {
     return x & (~x + 1);
 }
 
-static llu fenwick_sum(const llu index[], llu i_index) {
+static llu FENWICK_SUM(const llu index[], llu i_index) {
     llu sum = 0;
     llu kt = i_index;
-    llu k = lowbit(i_index);
+    llu k = LOWBIT(i_index);
     while (kt > k) {
         kt -= k;
         sum += index[kt];
-        k = lowbit(kt);
+        k = LOWBIT(kt);
     }
     return sum;
 }
 
-static void free_if_not_null(void * p) {
-    if (p != NULL) {
-        free(p);
-    }
-}
+#define FREE_IF_NOT_NULL(p) if (p != NULL) free(p);
 
 int get_uchar_len(uchar uc) {
     if ((uc ^ UTF8_0) >> 6 == 0) {
@@ -101,8 +98,8 @@ int clear_ustring(struct ustring ** us) {
         return -1;
     }
     if (*us != NULL) {
-        free_if_not_null((*us)->string);
-        free_if_not_null((*us)->index);
+        FREE_IF_NOT_NULL((*us)->string);
+        FREE_IF_NOT_NULL((*us)->index);
         free(*us);
         *us = NULL;
     }
@@ -117,7 +114,7 @@ llu get_ustring_index(const struct ustring * us, llu n) {
         return us->index[n];
     }
     else if (us->type == fenwick) {
-        return fenwick_sum(us->index, n) + us->index[n];
+        return FENWICK_SUM(us->index, n) + us->index[n];
     }
     else {
         return 0;
@@ -204,8 +201,8 @@ int slice_ustring(struct ustring * us_target, const struct ustring * us_base, ll
         e = ((end > us_base->index_len) ? us_base->index[us_base->index_len] : us_base->index[end]) - 1;
     }
     else if (us_target->type == fenwick) {
-        s = fenwick_sum(us_base->index, start) + us_base->index[start];
-        e = ((end > us_base->index_len) ? fenwick_sum(us_base->index, us_base->index_len) + us_base->index[us_base->index_len] : fenwick_sum(us_base->index, end) + us_base->index[end]) - 1;
+        s = FENWICK_SUM(us_base->index, start) + us_base->index[start];
+        e = ((end > us_base->index_len) ? FENWICK_SUM(us_base->index, us_base->index_len) + us_base->index[us_base->index_len] : FENWICK_SUM(us_base->index, end) + us_base->index[end]) - 1;
     }
     else {
         return -1;
@@ -242,8 +239,8 @@ int cat_partial_ustring(struct ustring * us_target, const struct ustring * us_ba
         e = ((end > us_base->index_len) ? us_base->index[us_base->index_len] : us_base->index[end]) - 1;
     }
     else if (us_target->type == fenwick) {
-        s = fenwick_sum(us_base->index, start) + us_base->index[start];
-        e = ((end > us_base->index_len) ? fenwick_sum(us_base->index, us_base->index_len) + us_base->index[us_base->index_len] : fenwick_sum(us_base->index, end) + us_base->index[end]) - 1;
+        s = FENWICK_SUM(us_base->index, start) + us_base->index[start];
+        e = ((end > us_base->index_len) ? FENWICK_SUM(us_base->index, us_base->index_len) + us_base->index[us_base->index_len] : FENWICK_SUM(us_base->index, end) + us_base->index[end]) - 1;
     }
     else {
         return -1;
@@ -319,7 +316,7 @@ llu update_ustring_index(struct ustring * us, llu n) {
         }
         else if (us->type == fenwick) {
             // fenwick tree
-            llu sum = fenwick_sum(us->index, i_index);
+            llu sum = FENWICK_SUM(us->index, i_index);
             us->index[i_index] = i - sum;
         }
         else {
@@ -337,7 +334,7 @@ llu update_ustring_index(struct ustring * us, llu n) {
     }
     else if (us->type == fenwick) {
         // fenwick tree
-        llu sum = fenwick_sum(us->index, i_index);
+        llu sum = FENWICK_SUM(us->index, i_index);
         us->index[i_index] = i - sum;
     }
     else {
@@ -428,3 +425,5 @@ void fprint_index(FILE * out, const struct ustring * us) {
     }
     fprintf(out, "\n");
 }
+
+#undef FREE_IF_NOT_NULL
