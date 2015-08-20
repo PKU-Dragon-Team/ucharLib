@@ -43,7 +43,7 @@ struct ustring {
 
 /* Get the proper length of the UTF8 character that starts with uc
    返回以 uc 开头的UTF8字符的长度*/
-int  get_uchar_len(uchar uc);
+int get_uchar_len(uchar uc);
 
 // ----- function for ustring -----
 /* only init_ustring accepts (and only accepts) raw pointer to ustring,
